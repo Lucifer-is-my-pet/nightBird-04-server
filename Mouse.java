@@ -26,7 +26,15 @@ public class Mouse implements IMouse {
 	private boolean life; // будем ориентироваться на неё при сохранении пути назад
 	private boolean empty;
 	String nameOfAlghoritm;
+	private boolean itKilledMe;
+	private int lifeCount;
 
+	public int getLifeCount() {
+		return lifeCount;
+	}
+	public void setLifeCount(int shift) {
+		this.lifeCount+=shift;
+	}
 	// блок геттеров-сеттеров для тестов
 	public Direction getDirection() {
 		return this.latestDirection;
@@ -79,6 +87,7 @@ public class Mouse implements IMouse {
 		
 		switch (action) { 
 		case Ok :
+			itKilledMe = false;
 			if (empty) { // если путь пуст, надо понять, где мы стоим 
 				empty = false;
 				return latestDirection; 
@@ -86,15 +95,18 @@ public class Mouse implements IMouse {
 			
 			if (life && !deleteDeadEnds(latestDirection)) {
 				wayFromLife.push(latestDirection);
-				//System.out.println("положили " + latestDirection);
 			}
 			return ifItWasOk(latestDirection);
 
-		case Fail : 
-			//System.out.println("уперлись в стену с " + latestDirection + ", возвращаем " + ifThereIsWallTheoretically(latestDirection));
+		case Fail :
+			if (itKilledMe)
+				setLifeCount(-1);
+			if (getLifeCount() < 2)
+				nameOfAlghoritm = "Back to life";
 			return ifThereIsWall(latestDirection);
 
 		case Life :
+			itKilledMe = false;
 			if (!life)
 				life = true;
 
@@ -103,6 +115,7 @@ public class Mouse implements IMouse {
 
 			if (getEnegry != 0) {
 				getEnegry--;
+				setLifeCount(1);
 				return Direction.None;
 			}
 			else { 
@@ -110,11 +123,13 @@ public class Mouse implements IMouse {
 				return ifItWasOk(latestDirection);
 			}
 			
-		case Dead : // не учитывается случай, когда теряется жизнь при столкновении со стеной, т.е. мышь ничего не подозревает
+		case Dead : 
+			itKilledMe = true;
 			if (!deleteDeadEnds(latestDirection)) {
 				wayFromLife.push(latestDirection);
-				//System.out.println("положили после капкана " + latestDirection);
 			}
+			if (getLifeCount() < 2)
+				nameOfAlghoritm = "Back to life";
 			return ifItWasOk(latestDirection);
 
 		default : break;
@@ -148,23 +163,6 @@ public class Mouse implements IMouse {
 			return Direction.None;
 		}
 	}
-	
-//	private Direction ifThereIsWallTheoretically(Direction latestDirection) {
-//		switch (latestDirection) {
-//		case Right :
-//			return Direction.Up;
-//		case Up :
-//			return Direction.Left;
-//		case Left :
-//			return Direction.Down;
-//		case Down :
-//			return Direction.Right;
-//		case None :
-//			throw new RuntimeException("Неверное направление!");
-//		default :
-//			return Direction.None;
-//		}
-//	}
 
 	/**
 	 * @param latestDirection напраление, по которому мышь шла до этого

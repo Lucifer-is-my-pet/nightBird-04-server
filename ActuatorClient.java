@@ -38,9 +38,6 @@ public class ActuatorClient {
 				newDirection = norushka.NextMove(newAction);
 				latestDirection = newDirection;
 				
-				if (recieved.getLifeCount() < 2)
-					norushka.nameOfAlghoritm = "Back to life";	
-				
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}

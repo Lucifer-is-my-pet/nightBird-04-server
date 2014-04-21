@@ -20,7 +20,7 @@ public class PrintableWood extends Wood {
 
 	PrintableWood(HashMap<Point, Character> lab, int length, int width, OutputStream out) throws IOException {
 		super(lab, length, width);
-		ps = new PrintStream(out);
+		ps = new PrintStream(out, true, "cp866"); // для cmd
 
 		initialLabyrinth = new HashMap<Point, Character>(lab);
 		labyrinthOfSymbols = lab;
